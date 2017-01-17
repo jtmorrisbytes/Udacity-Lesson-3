@@ -1,2 +1,2 @@
-# Udacity-Lesson-3
-Code that follows along on udacity Fullstack nanodegree
+# webnd-http
+Exercises for HTTP course.
