@@ -19,21 +19,21 @@
 
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.parse import parse_qs
-
+import json
 
 class MessageHandler(BaseHTTPRequestHandler):
     def do_POST(self):
         # 1. How long was the message? (Use the Content-Length header.)
-
+        length = int(self.headers.get('content-length',0))
         # 2. Read the correct amount of data from the request.
-
+        data = self.rfile.read(length).decode()
         # 3. Extract the "message" field from the request data.
-
+        message = parse_qs(data)
         # Send the "message" field back as the response.
         self.send_response(200)
         self.send_header('Content-type', 'text/plain; charset=utf-8')
         self.end_headers()
-        self.wfile.write(message.encode())
+        self.wfile.write(message.get("message")[0].encode())
 
 if __name__ == '__main__':
     server_address = ('', 8000)

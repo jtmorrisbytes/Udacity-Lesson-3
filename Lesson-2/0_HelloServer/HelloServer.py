@@ -17,6 +17,7 @@ class HelloHandler(BaseHTTPRequestHandler):
         self.end_headers()
 
         # Now, write the response body.
+  
         self.wfile.write("Hello, HTTP!\n".encode())
 
 if __name__ == '__main__':

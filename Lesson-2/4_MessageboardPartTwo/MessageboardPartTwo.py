@@ -16,9 +16,17 @@
 
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from urllib.parse import parse_qs
-
+import os
 
 class MessageHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        path = os.path.dirname(os.path.abspath(__file__))
+        form = open(os.path.join(path,'Messageboard.html'),"r").read()
+        self.send_response(200)
+        self.send_header('Content-type', 'text/html')
+        self.end_headers()
+        self.wfile.write(form.encode())
+    
     def do_POST(self):
         # How long was the message?
         length = int(self.headers.get('Content-length', 0))
@@ -27,13 +35,18 @@ class MessageHandler(BaseHTTPRequestHandler):
         data = self.rfile.read(length).decode()
 
         # Extract the "message" field from the request data.
-        message = parse_qs(data)["message"][0]
-
+        message = parse_qs(data).get("message")
+        if message == None:
+            self.send_response(400)
+            self.send_header('Content-type', 'text/plain; charset=utf-8')
+            self.end_headers()
+            self.wfile.write("Error: message cannot be empty".encode())
+        else:
         # Send the "message" field back as the response.
-        self.send_response(200)
-        self.send_header('Content-type', 'text/plain; charset=utf-8')
-        self.end_headers()
-        self.wfile.write(message.encode())
+            self.send_response(200)
+            self.send_header('Content-type', 'text/plain; charset=utf-8')
+            self.end_headers()
+            self.wfile.write(message[0].encode())
 
 if __name__ == '__main__':
     server_address = ('', 8000)
